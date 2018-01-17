@@ -1,0 +1,156 @@
+---
+swagger: "2.0"
+info:
+  description: "This is an API for the Father Brown project"
+  version: "1.0.0"
+  title: "Father Brown"
+  termsOfService: "http://fatherbrown.com/terms/"
+  contact:
+    email: "apiteam@fatherbrown.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "fatherbrown.com"
+basePath: "/v1"
+tags:
+- name: "Site"
+  description: "Sites of news"
+- name: "News"
+  description: "News to be published"
+  externalDocs:
+    description: "Find out more"
+    url: "http://fatherbrown.com"
+schemes:
+- "http"
+paths:
+  /site/{url}:
+    post:
+      tags:
+      - "Site"
+      summary: "Add a new url site"
+      description: ""
+      operationId: "add_url"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "url"
+        in: "path"
+        description: "URL of site"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Site"
+        405:
+          description: "Invalid input"
+      security:
+      - fatherbrown_auth:
+        - "write:site"
+        - "read:site"
+      x-swagger-router-controller: "swagger_server.controllers.site_controller"
+  /allSites:
+    get:
+      tags:
+      - "Site"
+      summary: "List of all sites"
+      description: "Return a list of sites."
+      operationId: "all_sites_get"
+      parameters: []
+      responses:
+        200:
+          description: "Return a list of sites"
+          schema:
+            $ref: "#/definitions/SiteList"
+        500:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      x-swagger-router-controller: "swagger_server.controllers.site_controller"
+  /newsToBePublished:
+    get:
+      tags:
+      - "News"
+      summary: "List of news to be published"
+      description: "Return a list of news."
+      operationId: "news_to_be_published_get"
+      parameters: []
+      responses:
+        200:
+          description: "Return a list of news"
+          schema:
+            $ref: "#/definitions/NewsList"
+        500:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      x-swagger-router-controller: "swagger_server.controllers.news_controller"
+securityDefinitions:
+  fatherbrown_auth:
+    type: "oauth2"
+    authorizationUrl: "http://fatherbrown.com/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:site: "modify pets in your account"
+      read:site: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Site:
+    type: "object"
+    properties:
+      siteId:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+      url:
+        type: "string"
+    xml:
+      name: "Site"
+  SiteList:
+    properties:
+      sites:
+        type: "array"
+        description: "List of all sites."
+        items:
+          $ref: "#/definitions/Site"
+  News:
+    type: "object"
+    properties:
+      Title:
+        type: "string"
+      SubTitle:
+        type: "string"
+      content:
+        type: "string"
+      url:
+        type: "string"
+      tipo:
+        type: "boolean"
+        description: "Class of news"
+        default: false
+      site:
+        $ref: "#/definitions/Site"
+  NewsList:
+    properties:
+      news:
+        type: "array"
+        description: "List of all sites."
+        items:
+          $ref: "#/definitions/News"
+    xml:
+      name: "News"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
