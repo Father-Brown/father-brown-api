@@ -10,13 +10,15 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "fatherbrown.com"
+host: "localhost:8080"
 basePath: "/v1"
 tags:
 - name: "Site"
   description: "Sites of news"
 - name: "News"
   description: "News to be published"
+- name: "Image"
+  description: "Image"
   externalDocs:
     description: "Find out more"
     url: "http://fatherbrown.com"
@@ -81,6 +83,39 @@ paths:
           description: "Return a list of news"
           schema:
             $ref: "#/definitions/NewsList"
+        404:
+          description: "Not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        500:
+          description: "Unexpected error"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+      x-swagger-router-controller: "swagger_server.controllers.news_controller"
+  /verifyNews/{url}:
+    get:
+      tags:
+      - "News"
+      summary: "Send a news to be classify"
+      description: "Send a news to be classify"
+      operationId: "verify_news"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "url"
+        in: "path"
+        description: "URL of site"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "Return a news classified"
+          schema:
+            $ref: "#/definitions/News"
+        404:
+          description: "Not found"
+          schema:
+            $ref: "#/definitions/ApiResponse"
         500:
           description: "Unexpected error"
           schema:
@@ -102,9 +137,6 @@ definitions:
   Site:
     type: "object"
     properties:
-      siteId:
-        type: "integer"
-        format: "int64"
       name:
         type: "string"
       url:
@@ -131,8 +163,10 @@ definitions:
         type: "string"
       tipo:
         type: "boolean"
+      accuracy:
+        type: "number"
+        format: "int64"
         description: "Class of news"
-        default: false
       site:
         $ref: "#/definitions/Site"
   NewsList:
