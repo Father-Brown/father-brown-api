@@ -1,3 +1,5 @@
+[![Gitter chat](https://badges.gitter.im/father-brown/api/gitter.png)](https://gitter.im/father-brown/api/)
+
 # Swagger generated server
 
 ## Overview
